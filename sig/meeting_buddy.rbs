@@ -1,0 +1,3 @@
+module MeetingBuddy
+  VERSION: String
+end
