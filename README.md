@@ -10,12 +10,12 @@ gem install meeting-buddy
 
 ## Usage
 
-Basic usage with a custom handler:
+Basic usage with a custom assistant:
 
 ```ruby
 require 'meeting_buddy'
 
-class MyHandler < MeetingBuddy::Handler
+class MyAssistant < MeetingBuddy::Assistant
   def on_transcription(text)
     puts "Transcribed: #{text}"
   end
@@ -23,7 +23,7 @@ end
 
 session = MeetingBuddy::Session.new(
   name: "my-meeting",
-  handlers: [MyHandler.new]
+  assistants: [MyAssistant.new]
 )
 
 session.start

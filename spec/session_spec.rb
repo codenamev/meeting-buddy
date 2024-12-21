@@ -11,10 +11,10 @@ RSpec.describe MeetingBuddy::Session do
       expect(session.name).to match(/\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}/)
     end
 
-    it "accepts custom handlers" do
-      handler = double("Handler")
-      session = described_class.new(handlers: [handler])
-      expect(session.handlers).to include(handler)
+    it "accepts custom assistants" do
+      assistant = instance_double("Assistant")
+      session = described_class.new(assistants: [assistant])
+      expect(session.assistants).to include(assistant)
     end
   end
 
@@ -32,11 +32,11 @@ RSpec.describe MeetingBuddy::Session do
   end
 
   describe "#update_transcript" do
-    let(:handler) { double("Handler", on_transcription: nil) }
-    let(:session) { described_class.new(handlers: [handler]) }
+    let(:assistant) { double("Assistant", on_transcription: nil) }
+    let(:session) { described_class.new(assistants: [assistant]) }
 
-    it "notifies handlers of new transcription" do
-      expect(handler).to receive(:on_transcription).with("test text")
+    it "notifies assistants of new transcription" do
+      expect(assistant).to receive(:on_transcription).with("test text")
       session.update_transcript("test text")
     end
   end

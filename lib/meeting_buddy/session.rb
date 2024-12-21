@@ -5,12 +5,12 @@ require "fileutils"
 module MeetingBuddy
   # Manages session-specific data for MeetingBuddy
   class Session
-    attr_reader :name, :base_path, :handlers
+    attr_reader :name, :base_path, :assistants
 
-    def initialize(name: nil, handlers: [])
+    def initialize(name: nil, assistants: [])
       @name = name || Time.now.strftime("%Y-%m-%d_%H-%M-%S")
       @base_path = File.join(MeetingBuddy.cache_dir, "sessions", @name)
-      @handlers = handlers
+      @assistants = assistants
       @signal = MeetingSignal.new
       setup_transcriber
       FileUtils.mkdir_p base_path
@@ -49,7 +49,7 @@ module MeetingBuddy
 
     def update_transcript(text)
       File.open(transcript_log, "a") { |f| f.puts text }
-      @handlers.each { |h| h.on_transcription(text) }
+      @assistants.each { |a| a.on_transcription(text) }
     end
 
     private
