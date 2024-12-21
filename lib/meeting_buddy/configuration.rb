@@ -6,7 +6,7 @@ module MeetingBuddy
   class Configuration
     # @return [String] Model name for Whisper speech recognition
     attr_accessor :whisper_model
-    
+
     # @return [OpenAI::Client] OpenAI client instance
     # @return [Logger] Main logger instance
     # @return [Logger] Whisper-specific logger instance
