@@ -28,6 +28,7 @@ RSpec.describe MeetingBuddy::CLI do
       allow(session).to receive(:start)
       allow(session).to receive(:stop)
       allow(MeetingBuddy).to receive(:setup)
+      allow(MeetingBuddy).to receive(:openai_client)
     end
 
     it "configures and starts session" do
@@ -41,6 +42,11 @@ RSpec.describe MeetingBuddy::CLI do
       allow(session).to receive(:start).and_raise(Interrupt)
       expect(session).to receive(:stop)
       cli.run
+    end
+
+    it "configures the openai_client" do
+      cli.run
+      expect(MeetingBuddy).to have_received(:openai_client)
     end
   end
 end
