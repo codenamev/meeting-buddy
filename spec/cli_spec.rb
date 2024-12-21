@@ -9,7 +9,7 @@ RSpec.describe MeetingBuddy::CLI do
       expect(cli.instance_variable_get(:@options)).to include(debug: true)
     end
 
-    it "parses whisper model" do 
+    it "parses whisper model" do
       cli = described_class.new(["-w", "base.en"])
       expect(cli.instance_variable_get(:@options)).to include(whisper_model: "base.en")
     end
