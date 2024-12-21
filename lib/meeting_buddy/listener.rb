@@ -3,7 +3,12 @@
 require "open3"
 
 module MeetingBuddy
+  # Handles audio input and transcription processing
+  # @api private
   class Listener
+    # Initialize a new Listener instance
+    # @param transcriber [Transcriber] transcription processor
+    # @param signal [MeetingSignal] signal for event handling
     def initialize(transcriber:, signal:)
       @transcriber = transcriber
       @signal = signal
@@ -12,6 +17,7 @@ module MeetingBuddy
       @whisper_logger = MeetingBuddy.whisper_logger
     end
 
+    # Start listening for audio input
     def start
       Sync do |parent|
         Open3.popen3(MeetingBuddy.config.whisper_command) do |_stdin, stdout, stderr, _thread|
@@ -49,16 +55,20 @@ module MeetingBuddy
       @shutdown = true
     end
 
+    # Enable announcement of heard text
     def announce_what_you_hear!
       @announce_hearing = true
     end
 
+    # Disable announcement of heard text
     def suppress_what_you_hear!
       @announce_hearing = false
     end
 
     private
 
+    # Process a line of transcription
+    # @param line [String] raw transcription line
     def process_transcription(line)
       transcribed_line = @transcriber.process(line)
       return if transcribed_line.text.empty?
@@ -66,10 +76,14 @@ module MeetingBuddy
       @signal.trigger({text: transcribed_line.text, timestamp: transcribed_line.timestamp})
     end
 
+    # Log error stream output
+    # @param stderr [IO] error stream
     def log_errors(stderr)
       stderr.each { |line| @whisper_logger.error(line) }
     end
 
+    # Log standard output stream
+    # @param stdout [IO] standard output stream
     def log_output(stdout)
       stdout.each { |line| @whisper_logger.debug(line) }
     end

@@ -5,22 +5,15 @@ require "rainbow"
 
 module MeetingBuddy
   # Command Line Interface for MeetingBuddy
-  #
-  # Handles command line argument parsing, session management, and audio processing
-  # for meeting recording and AI interaction.
-  #
-  # @example Basic usage
-  #   cli = MeetingBuddy::CLI.new(ARGV)
-  #   cli.run
-  #
-  # @example With options
-  #   cli = MeetingBuddy::CLI.new(["--debug", "-n", "my-meeting"])
-  #   cli.run
+  # @api public
   class CLI
+    # Initialize a new CLI instance
+    # @param argv [Array<String>] Command line arguments
     def initialize(argv)
       @options = parse_options(argv)
     end
 
+    # Run the CLI
     def run
       configure
       setup_dependencies
@@ -31,6 +24,9 @@ module MeetingBuddy
 
     private
 
+    # Parse command line options
+    # @param argv [Array<String>] Command line arguments
+    # @return [Hash] Parsed options
     def parse_options(argv)
       options = {}
       OptionParser.new do |opts|
@@ -51,6 +47,7 @@ module MeetingBuddy
       options
     end
 
+    # Configure MeetingBuddy based on options
     def configure
       MeetingBuddy.configure do |config|
         config.whisper_model = @options[:whisper_model] if @options[:whisper_model]
@@ -61,6 +58,7 @@ module MeetingBuddy
       end
     end
 
+    # Set up system dependencies
     def setup_dependencies
       MeetingBuddy.logger.info "Setting up dependencies..."
       MeetingBuddy.setup
@@ -68,6 +66,7 @@ module MeetingBuddy
       MeetingBuddy.openai_client
     end
 
+    # Start a new session
     def start_session
       MeetingBuddy.start_session(name: @options[:name])
       MeetingBuddy.logger.info MeetingBuddy.to_human("Using whisper model: #{MeetingBuddy.config.whisper_model}", :info)
@@ -75,6 +74,7 @@ module MeetingBuddy
       MeetingBuddy.session.start
     end
 
+    # Handle shutdown gracefully
     def handle_shutdown
       MeetingBuddy.logger.info MeetingBuddy.to_human("\nShutting down streams...", :wait)
       MeetingBuddy.session.stop

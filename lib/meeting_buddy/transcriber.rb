@@ -1,13 +1,17 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 
 module MeetingBuddy
   # Manages the transcript of the meeting
+  # @api private
   class Transcriber
     # @return [String] full transcript of the meeting
     attr_reader :full_transcript
 
+    # Represents a single line of transcription
+    # @api private
     class Line < Struct.new(:text, :timestamp, keyword_init: true); end
 
+    # Initialize a new Transcriber instance
     def initialize
       @full_transcript = ""
       @last_timestamp = 0
@@ -15,7 +19,7 @@ module MeetingBuddy
 
     # Process new transcription text
     # @param line [String] raw transcription line from whisper
-    # @return [String] cleaned transcription text
+    # @return [Line] processed transcription line
     def process(line)
       timestamp, text = parse_line(line)
       return Line.new(text: "", timestamp: Time.now) if text.empty?
@@ -29,18 +33,23 @@ module MeetingBuddy
     # Get the latest portion of the transcript
     # @param limit [Integer] number of characters to return
     # @return [String] latest portion of the transcript
+    # @raise [ArgumentError] if limit is negative
     def latest(limit = 200)
       @full_transcript[[@full_transcript.length - limit, 0].max, limit] || raise(ArgumentError, "negative limit")
     end
 
     private
 
+    # Format transcription text for output
+    # @param text [String] raw transcription text
+    # @return [String] formatted text
     def format_transcription(text)
       text.strip + " "
     end
 
-    private
-
+    # Parse a raw transcription line
+    # @param line [String] raw line from whisper
+    # @return [Array<Integer, String>] timestamp and cleaned text
     def parse_line(line)
       timestamp, text = nil, ""
       match = line.match(/\[.*?(\d{2}:\d{2}:\d{2}\.\d{3}).*?\]\s{1,3}(.+)/)
@@ -50,7 +59,9 @@ module MeetingBuddy
       [timestamp, text]
     end
 
-    # Timestamps are formatted as 'h:m:s'
+    # Convert time string to seconds
+    # @param time_str [String] time in format 'h:m:s'
+    # @return [Float] time in seconds
     def time_to_seconds(time_str)
       h, m, s = time_str.split(":").map(&:to_f)
       (h * 3600) + (m * 60) + s
