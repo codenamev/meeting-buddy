@@ -44,13 +44,13 @@ RSpec.describe MeetingBuddy::Transcriber do
       it "returns empty string for [BLANK_AUDIO]" do
         input = "[00:00:00.000 --> 00:00:05.000]  [BLANK_AUDIO]"
         result = transcriber.process(input)
-        expect(result).to eq("")
+        expect(result.text).to eq("")
         expect(transcriber.full_transcript).to eq("")
       end
 
       it "handles empty input" do
         result = transcriber.process("")
-        expect(result).to eq("")
+        expect(result.text).to eq("")
         expect(transcriber.full_transcript).to eq("")
       end
     end
